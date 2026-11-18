@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Freelance Escrow - Smart Contract Freelance Marketplace</title>
+    <!-- Google Fonts: Prompt & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Header Navigation Bar -->
+<header class="app-header">
+    <div class="header-container">
+        <a href="#" class="brand-wrapper">
+            <div class="brand-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="brand-text">
+                <h1>Freelance Escrow <span class="brand-badge">WEB3</span></h1>
+                <p>แพลตฟอร์มจ้างงานและสัญญาอัจฉริยะ ปลอดภัย 100%</p>
+            </div>
+        </a>
+
+        <ul class="nav-links" id="mainNavLinks">
+            <li><a href="#sec-create" class="nav-link"><i class="fa-solid fa-file-contract"></i> สร้างงาน</a></li>
+            <li><a href="#sec-deposit" class="nav-link"><i class="fa-solid fa-vault"></i> ฝากเงิน</a></li>
+            <li><a href="#sec-revision" class="nav-link"><i class="fa-solid fa-rotate-left"></i> ขอแก้ไข</a></li>
+            <li><a href="#sec-approve" class="nav-link"><i class="fa-solid fa-circle-check"></i> อนุมัติเงิน</a></li>
+            <li><a href="#sec-dispute" class="nav-link"><i class="fa-solid fa-scale-balanced"></i> จัดการข้อพิพาท</a></li>
+            <li><a href="#sec-review" class="nav-link"><i class="fa-solid fa-star"></i> คะแนน & รีวิว</a></li>
+            <li><a href="#sec-track" class="nav-link"><i class="fa-solid fa-magnifying-glass"></i> ตรวจสอบงาน</a></li>
+            <li><a href="#sec-transactions" class="nav-link"><i class="fa-solid fa-receipt"></i> บันทึกธุรกรรม</a></li>
+        </ul>
+
+        <div class="header-actions">
+            <!-- User Role / Auth Box -->
+            <div class="user-auth-section">
+                <button id="loginOpenBtn" class="btn-login-open" onclick="openLoginModal()">
+                    <i class="fa-solid fa-right-to-bracket"></i> เข้าสู่ระบบ / เลือกโรล
+                </button>
+                <div id="userProfilePill" class="profile-pill" style="display: none;">
+                    <div id="profileAvatar" class="profile-avatar client">
+                        <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <span id="roleBadgeHeader" class="role-tag-pill client">ผู้ว่าจ้าง</span>
+                    <button class="btn-auth-action" onclick="openLoginModal()" title="สลับบทบาทการใช้งาน">
+                        <i class="fa-solid fa-arrows-rotate"></i> สลับโรล
+                    </button>
+                    <button class="btn-auth-action" onclick="logout()" title="ออกจากระบบ">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="network-badge" title="Smart Contract Network">
+                <span class="network-dot"></span>
+                <span>Sepolia Testnet</span>
+            </div>
+            <div class="wallet-status-box">
+                <span id="wallet">ยังไม่ได้เชื่อมต่อ Wallet</span>
+                <button class="wallet-btn" onclick="connectWallet()">
+                    <i class="fa-solid fa-wallet"></i> Connect Wallet
+                </button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Hero Section with Escrow Process Flow -->
+<section class="hero-section">
+    <div class="hero-banner">
+        <div class="hero-top-badge">
+            <i class="fa-solid fa-lock"></i>
+            <span>Smart Contract Escrow Protected • การันตีเงินค่าจ้างปลอดภัย</span>
+        </div>
+        <div class="hero-content">
+            <h2>ระบบจ้างงานและคุ้มครองค่าจ้างฟรีแลนซ์ <span class="hero-highlight">ยุคใหม่</span></h2>
+            <p>หมดกังวลเรื่องโดนชิ่งงานหรือไม่ได้รับเงินค่าจ้าง! เงินค่าจ้างจะถูกล็อกไว้ใน Smart Contract อย่างปลอดภัย และจะโอนให้ฟรีแลนซ์อัตโนมัติเมื่อผู้ว่าจ้างตรวจสอบและอนุมัติงานเสร็จสิ้น</p>
+        </div>
+
+        <!-- 4-Step Escrow Stepper -->
+        <div class="workflow-stepper">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <div class="step-info">
+                    <h4>สร้างสัญญาจ้าง</h4>
+                    <p>กำหนดเงื่อนไข & ขอบเขตงาน</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <div class="step-info">
+                    <h4>ฝากเงินเข้า Escrow</h4>
+                    <p>ล็อกเงินประกันค่าจ้างบน Chain</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <div class="step-info">
+                    <h4>ฟรีแลนซ์ส่งมอบงาน</h4>
+                    <p>แนบผลงาน / ตรวจสอบความถูกต้อง</p>
+                </div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">4</div>
+                <div class="step-info">
+                    <h4>อนุมัติ & รับเงิน</h4>
+                    <p>รับเงินทันทีและให้คะแนนรีวิว</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dynamic Role Workspace Banner -->
+<div id="roleWorkspaceBanner" class="role-workspace-banner client">
+    <div class="role-banner-left">
+        <div id="roleBannerIcon" class="role-banner-icon client">
+            <i class="fa-solid fa-user-tie"></i>
+        </div>
+        <div class="role-banner-text">
+            <h3 id="roleBannerTitle">Employer Hub (พื้นที่สำหรับผู้ว่าจ้าง)</h3>
+            <p id="roleBannerDesc">สร้างสัญญาจ้างงาน ฝากเงินเข้า Escrow Vault ตรวจสอบผลงาน และอนุมัติปล่อยเงินอย่างปลอดภัย</p>
+        </div>
+    </div>
+    <div class="role-banner-right">
+        <span class="role-tag-pill client" id="workspaceRoleTag">โหมด: ผู้ว่าจ้าง</span>
+        <button class="btn-auth-action" onclick="openLoginModal()" title="สลับหรือเข้าสู่ระบบด้วยบทบาทอื่น">
+            <i class="fa-solid fa-arrows-rotate"></i> สลับบทบาทการใช้งาน
+        </button>
+    </div>
+</div>
+
+<!-- Main Dashboard Grid -->
+<main>
+    <div class="dashboard-grid">
+
+        <!-- 1. สร้างข้อตกลงการจ้างงาน (Client) -->
+        <section class="action-card col-7" id="sec-create" data-category="client">
+            <div>
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon indigo">
+                            <i class="fa-solid fa-file-contract"></i>
+                        </div>
+                        <div>
+                            <h2>1. สร้างข้อตกลงการจ้างงาน</h2>
+                            <p class="subtitle">ระบุรายละเอียดโครงการและระบุ Wallet ของฟรีแลนซ์ที่รับงาน</p>
+                        </div>
+                    </div>
+                    <span class="role-tag client">Client Only</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="name">ชื่อโครงการ <span class="hint">ชื่องานที่กระชับและชัดเจน</span></label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-heading prefix-icon"></i>
+                        <input id="name" placeholder="เช่น พัฒนาระบบ Web Application หรือ ออกแบบ Logo">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">รายละเอียดงาน <span class="hint">ขอบเขตงานและเงื่อนไขการส่งมอบ</span></label>
+                    <textarea id="description" placeholder="อธิบายรายละเอียดงาน ข้อตกลง และสิ่งที่ต้องส่งมอบ..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="freelancer">Wallet ฟรีแลนซ์ <span class="hint">Sepolia Address</span></label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-id-card prefix-icon"></i>
+                            <input id="freelancer" placeholder="0x...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deadline">กำหนดส่งงาน (Deadline)</label>
+                        <div class="input-with-icon">
+                            <i class="fa-regular fa-calendar-days prefix-icon"></i>
+                            <input type="datetime-local" id="deadline">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="createJob()">
+                <i class="fa-solid fa-plus-circle"></i> ยืนยันการสร้างงาน (Create Job)
+            </button>
+        </section>
+
+        <!-- 2. ฝากเงินค่าจ้าง (Client) -->
+        <section class="action-card col-5" id="sec-deposit" data-category="client">
+            <div>
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon emerald">
+                            <i class="fa-solid fa-vault"></i>
+                        </div>
+                        <div>
+                            <h2>2. ฝากเงินค่าจ้างเข้า Escrow</h2>
+                            <p class="subtitle">ล็อกเงินค่าจ้างไว้ในระบบเพื่อการันตีให้กับฟรีแลนซ์</p>
+                        </div>
+                    </div>
+                    <span class="role-tag client">Client Only</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="depositId">รหัสงาน (Job ID)</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-hashtag prefix-icon"></i>
+                        <input id="depositId" type="number" placeholder="เช่น 0, 1, 2">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">จำนวนเงินค่าจ้าง (ETH)</label>
+                    <div class="input-with-icon">
+                        <i class="fa-brands fa-ethereum prefix-icon"></i>
+                        <input id="amount" type="number" step="0.001" placeholder="เช่น 0.05">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-emerald" onclick="depositPayment()">
+                <i class="fa-solid fa-arrow-down-to-bracket"></i> ยืนยันฝากเงินค่าจ้าง (Deposit)
+            </button>
+        </section>
+
+        <!-- 3. ส่งมอบงาน (Freelancer) -->
+        <section class="action-card col-6" id="sec-submit" data-category="freelancer">
+            <div>
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon cyan">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <div>
+                            <h2>3. ส่งมอบงาน</h2>
+                            <p class="subtitle">แนบลิงก์ผลงาน GitHub, Figma, Google Drive หรือ IPFS Hash</p>
+                        </div>
+                    </div>
+                    <span class="role-tag freelancer">Freelancer</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="submitId">รหัสงาน (Job ID)</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-hashtag prefix-icon"></i>
+                        <input id="submitId" type="number" placeholder="ระบุ Job ID ที่ต้องการส่งงาน">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="work">ลิงก์ผลงาน หรือ Hash ไฟล์</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-link prefix-icon"></i>
+                        <input id="work" placeholder="https://github.com/... หรือ ipfs://...">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-cyan" onclick="submitWork()">
+                <i class="fa-solid fa-paper-plane"></i> ส่งมอบผลงาน (Submit Work)
+            </button>
+        </section>
+
+        <!-- 4. ขอแก้ไขงาน (Client) -->
+        <section class="action-card col-6" id="sec-revision" data-category="client">
+            <div>
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon amber">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </div>
+                        <div>
+                            <h2>4. ขอแก้ไขงาน</h2>
+                            <p class="subtitle">หากงานยังไม่สมบูรณ์ สามารถแจ้งรายละเอียดให้ฟรีแลนซ์แก้ไขได้</p>
+                        </div>
+                    </div>
+                    <span class="role-tag client">Client Only</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="revisionId">รหัสงาน (Job ID)</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-hashtag prefix-icon"></i>
+                        <input id="revisionId" type="number" placeholder="ระบุ Job ID ที่ต้องการขอแก้ไข">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="revisionDetail">รายละเอียดสิ่งที่ต้องการแก้ไข</label>
+                    <textarea id="revisionDetail" placeholder="ระบุจุดที่ต้องปรับปรุง หรือเพิ่มเติมอย่างละเอียด..."></textarea>
+                </div>
+            </div>
+
+            <button class="btn-amber" onclick="requestRevision()">
+                <i class="fa-solid fa-pen-to-square"></i> ส่งคำขอแก้ไขงาน (Request Revision)
+            </button>
+        </section>
+
+        <!-- 5. อนุมัติและจ่ายเงิน (Client) -->
+        <section class="action-card col-6" id="sec-approve" data-category="client">
+            <div>
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon emerald">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div>
+                            <h2>5. อนุมัติและจ่ายเงิน</h2>
+                            <p class="subtitle">เมื่องานถูกต้องตามข้อตกลง อนุมัติเพื่อโอนเงินให้ฟรีแลนซ์ทันที</p>
+                        </div>
+                    </div>
+                    <span class="role-tag client">Client Only</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="approveId">รหัสงาน (Job ID)</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-hashtag prefix-icon"></i>
+                        <input id="approveId" type="number" placeholder="ระบุ Job ID เพื่ออนุมัติปล่อยเงิน">
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-emerald" onclick="approveWork()">
+                <i class="fa-solid fa-money-bill-transfer"></i> อนุมัติและโอนเงิน (Release Payment)
+            </button>
+        </section>
+
+        <!-- 6. จัดการข้อพิพาท (Dispute & Admin) -->
+        <section class="action-card col-6" id="sec-dispute" data-category="dispute">
+            <div>
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon rose">
+                            <i class="fa-solid fa-scale-unbalanced-flip"></i>
+                        </div>
+                        <div>
+                            <h2>6. ศูนย์ระงับข้อพิพาท (Dispute)</h2>
+                            <p class="subtitle">กรณีมีความขัดแย้งเกี่ยวกับผลงาน สามารถแจ้งให้ผู้ดูแลระบบตรวจสอบได้</p>
+                        </div>
+                    </div>
+                    <span class="role-tag admin">Arbitration</span>
+                </div>
+
+                <div id="disputeUserForm">
+                    <div class="form-group">
+                        <label for="disputeId">รหัสงานที่มีปัญหา (Job ID)</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-triangle-exclamation prefix-icon" style="color: #ef4444;"></i>
+                            <input id="disputeId" type="number" placeholder="ระบุ Job ID เพื่อแจ้งข้อพิพาท">
+                        </div>
+                    </div>
+
+                    <button class="btn-rose" onclick="raiseDispute()">
+                        <i class="fa-solid fa-bullhorn"></i> แจ้งข้อพิพาท (Raise Dispute)
+                    </button>
+                </div>
+
+                <div id="adminArbitratorBlock">
+                    <hr>
+                    <div class="admin-locked-notice">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span><strong>เฉพาะผู้ดูแลระบบ (Admin Only):</strong> เฉพาะเจ้าของสัญญาหรือแอดมินเท่านั้นที่มีสิทธิ์ตัดสินข้อพิพาท</span>
+                    </div>
+
+                    <h3><i class="fa-solid fa-user-shield"></i> สำหรับผู้ดูแลระบบ (Admin Arbitrator)</h3>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="resolveId">รหัสงาน (Job ID)</label>
+                            <div class="input-with-icon">
+                                <i class="fa-solid fa-hashtag prefix-icon"></i>
+                                <input id="resolveId" type="number" placeholder="Job ID">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="decision">คำตัดสินข้อพิพาท</label>
+                            <select id="decision">
+                                <option value="true">จ่ายเงินให้ฟรีแลนซ์ (Pay Freelancer)</option>
+                                <option value="false">คืนเงินให้ผู้ว่าจ้าง (Refund Client)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="btn-secondary" onclick="resolveDispute()">
+                        <i class="fa-solid fa-gavel"></i> ยืนยันผลการพิจารณาตัดสิน (Resolve)
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. ให้คะแนนและรีวิว (Review) -->
+        <section class="action-card col-6" id="sec-review" data-category="dispute">
+            <div>
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon amber">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                        <div>
+                            <h2>7. ให้คะแนนและรีวิวผลงาน</h2>
+                            <p class="subtitle">สร้างความน่าเชื่อถือในคอมมูนิตี้ด้วยการประเมินผลการทำงานจริง</p>
+                        </div>
+                    </div>
+                    <span class="role-tag public">Feedback</span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="reviewId">รหัสงาน (Job ID)</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-hashtag prefix-icon"></i>
+                            <input id="reviewId" type="number" placeholder="Job ID ที่เสร็จสิ้น">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="rating">คะแนนความพึงพอใจ</label>
+                        <div class="input-with-icon">
+                            <i class="fa-solid fa-star prefix-icon" style="color: #f59e0b;"></i>
+                            <select id="rating">
+                                <option value="5">⭐⭐⭐⭐⭐ (5 ดาว - ยอดเยี่ยมมาก)</option>
+                                <option value="4">⭐⭐⭐⭐ (4 ดาว - ดีมาก)</option>
+                                <option value="3">⭐⭐⭐ (3 ดาว - ปานกลาง)</option>
+                                <option value="2">⭐⭐ (2 ดาว - ควรปรับปรุง)</option>
+                                <option value="1">⭐ (1 ดาว - ไม่น่าพอใจ)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="comment">ความคิดเห็น / คำแนะนำ</label>
+                    <textarea id="comment" placeholder="เขียนรีวิวการทำงานเพื่อเป็นประโยชน์แก่ผู้ใช้อื่น..."></textarea>
+                </div>
+            </div>
+
+            <button class="btn-amber" onclick="addReview()">
+                <i class="fa-solid fa-comment-dots"></i> ส่งความคิดเห็นและรีวิว (Submit Review)
+            </button>
+        </section>
+
+        <!-- 9. ตรวจสอบคะแนนผู้ใช้งาน (Rating Inspector) -->
+        <section class="action-card col-6" id="sec-reputation" data-category="track">
+            <div>
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon amber">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <div>
+                            <h2>9. ตรวจสอบคะแนนและความน่าเชื่อถือ</h2>
+                            <p class="subtitle">ค้นหาประวัติคะแนนรีวิวเฉลี่ยและสถิติงานของผู้ใช้งานตาม Wallet</p>
+                        </div>
+                    </div>
+                    <span class="role-tag public">Reputation</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="ratingAddress">Wallet Address</label>
+                    <div class="input-with-icon">
+                        <i class="fa-solid fa-wallet prefix-icon"></i>
+                        <input id="ratingAddress" placeholder="0x... ที่ต้องการตรวจสอบคะแนน">
+                    </div>
+                </div>
+
+                <label><i class="fa-solid fa-chart-simple"></i> สรุปคะแนนรีวิวเฉลี่ย</label>
+                <div id="ratingResult" class="result"></div>
+            </div>
+
+            <button class="btn-amber" style="margin-top: 20px;" onclick="getRating()">
+                <i class="fa-solid fa-magnifying-glass-chart"></i> ตรวจสอบคะแนน (Get Rating)
+            </button>
+        </section>
+
+        <!-- 8. ตรวจสอบรายละเอียดงาน & ผลงาน (Track Jobs) -->
+        <section class="action-card col-12" id="sec-track" data-category="track">
+            <div>
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon indigo">
+                            <i class="fa-solid fa-clipboard-list"></i>
+                        </div>
+                        <div>
+                            <h2>8. ศูนย์ตรวจสอบรายละเอียดงานและประวัติ</h2>
+                            <p class="subtitle">ตรวจสอบสถานะสัญญาจ้าง ประวัติการส่งงาน และข้อเสนอแก้ไขแบบเรียลไทม์</p>
+                        </div>
+                    </div>
+                    <span class="role-tag public">Public Search</span>
+                </div>
+
+                <!-- Showcase Completed Job #1 -->
+                <div class="completed-job-badge-card" style="background: linear-gradient(135deg, #ecfdf5, #f0fdf4); border: 1.5px solid #a7f3d0; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="width: 38px; height: 38px; border-radius: 50%; background: #10b981; color: white; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 14px; color: #065f46; font-weight: 700;">
+                                ตัวอย่างงานที่เสร็จสมบูรณ์แล้ว (Completed Escrow Project): Job ID #1
+                            </h4>
+                            <p style="margin: 2px 0 0 0; font-size: 12px; color: #047857;">
+                                โครงการพัฒนาเว็บแอป Next.js • ค่าจ้าง 0.05 ETH • ส่งมอบงาน ตรวจรับ และปล่อยเงินเรียบร้อยแล้ว
+                            </p>
+                        </div>
+                    </div>
+                    <button style="width: auto; padding: 8px 18px; font-size: 12.5px;" class="btn-emerald" onclick="loadCompletedJobSample()">
+                        <i class="fa-solid fa-eye"></i> ดูรายละเอียดงานนี้ (Job #1)
+                    </button>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-bottom: 20px;">
+                    <div class="input-with-icon" style="flex: 1;">
+                        <i class="fa-solid fa-magnifying-glass prefix-icon"></i>
+                        <input id="searchId" type="number" placeholder="กรอก Job ID ที่ต้องการตรวจสอบ (เช่น 0, 1, 2)">
+                    </div>
+                    <button style="width: auto; padding: 0 28px;" onclick="getJob()">
+                        <i class="fa-solid fa-magnifying-glass"></i> ค้นหางาน
+                    </button>
+                </div>
+
+                <!-- Job Details Box -->
+                <label><i class="fa-solid fa-circle-info"></i> ข้อมูลสัญญาและสถานะงาน</label>
+                <div id="jobResult" class="result"></div>
+
+                <div class="dashboard-grid" style="margin-top: 16px; gap: 16px;">
+                    <div class="col-4">
+                        <h3><i class="fa-solid fa-clock-rotate-left"></i> ประวัติการส่งงาน</h3>
+                        <div id="workHistory" class="result"></div>
+                    </div>
+
+                    <div class="col-4">
+                        <h3><i class="fa-solid fa-pencil"></i> ประวัติการขอแก้ไข</h3>
+                        <div id="revisionHistory" class="result"></div>
+                    </div>
+
+                    <div class="col-4">
+                        <h3><i class="fa-regular fa-comments"></i> ประวัติรีวิว</h3>
+                        <div id="reviewHistory" class="result"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. ประวัติธุรกรรม (Live Ledger Feed) -->
+        <section class="action-card col-12" id="sec-transactions" data-category="transactions">
+            <div>
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon blue">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div>
+                            <h2>10. ประวัติธุรกรรมบนบล็อกเชน (Activity Ledger)</h2>
+                            <p class="subtitle">บันทึกธุรกรรมทั้งหมดจากระบบ Database และ Smart Contract บน Sepolia</p>
+                        </div>
+                    </div>
+                    <button style="width: auto; padding: 8px 18px;" class="btn-secondary" onclick="loadTransactions()">
+                        <i class="fa-solid fa-arrows-rotate"></i> รีเฟรชประวัติ
+                    </button>
+                </div>
+
+                <div id="transactions" class="result">
+                    <em>กดปุ่มรีเฟรชประวัติ หรือเชื่อมต่อ Wallet เพื่อโหลดข้อมูลธุรกรรม</em>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="app-footer">
+    <div class="footer-container">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <i class="fa-solid fa-shield-halved" style="color: #6366f1;"></i>
+                <span>Freelance Escrow Platform</span>
+            </div>
+            <div class="footer-badges">
+                <span class="footer-pill"><i class="fa-brands fa-ethereum"></i> Ethereum Sepolia</span>
+                <span class="footer-pill"><i class="fa-solid fa-code"></i> Ethers.js v6</span>
+                <span class="footer-pill"><i class="fa-solid fa-database"></i> SQLite & Node.js</span>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 Freelance Escrow Tha. ระบบสัญญาจ้างงานแบบกระจายศูนย์ ปลอดภัยและโปร่งใสทุกขั้นตอน</p>
+            <p>Smart Contract Verified on Sepolia Testnet</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Toast Message Container -->
+<div id="message"></div>
+
+<!-- Login & Role Selection Modal -->
+<div id="loginModal" class="modal-overlay">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i> เข้าสู่ระบบ / สลับบทบาท</h3>
+            <button class="modal-close-btn" onclick="closeLoginModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size: 13.5px; color: var(--dark-600); margin-bottom: 18px;">
+                เลือกบทบาทที่คุณต้องการใช้งานในระบบ เพื่อปรับแต่งหน้าจอและเปิดเมนูการทำงานให้ตรงตามสิทธิ์ของคุณ:
+            </p>
+
+            <div class="modal-step-title">
+                <i class="fa-solid fa-users-gear"></i> เลือกประเภทผู้ใช้งาน (Select Role)
+            </div>
+
+            <div class="role-choice-grid">
+                <!-- Role: Client -->
+                <div class="role-choice-card role-client selected" data-role="client" onclick="selectLoginRole('client')">
+                    <div class="role-choice-info">
+                        <div class="role-choice-icon client">
+                            <i class="fa-solid fa-user-tie"></i>
+                        </div>
+                        <div class="role-choice-text">
+                            <h4>ผู้ว่าจ้าง (Client / Employer)</h4>
+                            <p>สร้างสัญญาจ้าง, ล็อกเงินใน Escrow, ขอแก้ไขงาน และอนุมัติปล่อยเงิน</p>
+                        </div>
+                    </div>
+                    <div class="role-radio-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+
+                <!-- Role: Freelancer -->
+                <div class="role-choice-card role-freelancer" data-role="freelancer" onclick="selectLoginRole('freelancer')">
+                    <div class="role-choice-info">
+                        <div class="role-choice-icon freelancer">
+                            <i class="fa-solid fa-laptop-code"></i>
+                        </div>
+                        <div class="role-choice-text">
+                            <h4>ฟรีแลนซ์ (Freelancer)</h4>
+                            <p>ส่งมอบผลงาน (Submit Deliverables), ตรวจสอบสถานะสัญญา และดูคะแนนรีวิว</p>
+                        </div>
+                    </div>
+                    <div class="role-radio-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+
+                <!-- Role: Admin -->
+                <div class="role-choice-card role-admin" data-role="admin" onclick="selectLoginRole('admin')">
+                    <div class="role-choice-info">
+                        <div class="role-choice-icon admin">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <div class="role-choice-text">
+                            <h4>ผู้ดูแลระบบ (Admin Arbitrator)</h4>
+                            <p>ศูนย์พิจารณาตัดสินข้อพิพาทสัญญาจ้าง และกำกับดูแลความเรียบร้อย</p>
+                        </div>
+                    </div>
+                    <div class="role-radio-check"><i class="fa-solid fa-check"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-primary" onclick="confirmLogin()">
+                <i class="fa-solid fa-right-to-bracket"></i> ยืนยันการเข้าสู่ระบบ
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
